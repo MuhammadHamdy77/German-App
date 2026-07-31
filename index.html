@@ -441,6 +441,243 @@
             }
         }
 
+        /* ================================================================
+         * SALES REPRESENTATIVE — first-launch dialog + header badge
+         * Mirrors the Flutter mobile app's _FirstLaunchSalesRepDialog UI.
+         * ================================================================ */
+
+        /* --- Background overlays differentiate first-launch vs edit --- */
+        .sales-rep-overlay.sr-first-launch {
+            background-color: rgba(0, 0, 0, 0.88); /* near-opaque on first launch */
+        }
+        .sales-rep-overlay.sr-edit-mode {
+            background-color: rgba(10, 25, 47, 0.62); /* semi-transparent edit mode */
+        }
+        body.light-mode .sales-rep-overlay.sr-first-launch {
+            background-color: rgba(0, 0, 0, 0.82);
+        }
+
+        /* --- The dialog card itself --- */
+        .sales-rep-modal {
+            max-width: 430px;
+            width: 92%;
+            padding: 28px 26px 22px;
+            text-align: start; /* RTL natural flow */
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.45);
+        }
+        /* Slightly slimmer on phones */
+        @media (max-width: 480px) {
+            .sales-rep-modal { padding: 22px 18px 18px; max-width: 94%; width: 94%; }
+        }
+
+        /* Header row: [icon] [title] [X-close] */
+        .sales-rep-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .sales-rep-icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(212, 140, 36, 0.14); /* accent gold tint */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+        }
+        .sales-rep-title {
+            flex: 1;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--on-surface);
+            line-height: 1.35;
+        }
+        .sales-rep-close {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 120ms ease, color 120ms ease;
+        }
+        .sales-rep-close:hover {
+            background: rgba(134, 142, 154, 0.14);
+            color: var(--on-surface);
+        }
+
+        .sales-rep-subtitle {
+            margin: 0 0 18px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--on-surface-variant);
+        }
+
+        /* --- Form field --- */
+        .sales-rep-form { display: block; }
+        .sales-rep-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--on-surface);
+        }
+        .sales-rep-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .sales-rep-prefix-icon {
+            position: absolute;
+            right: 14px; /* RTL => icon sits on the START side */
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--on-surface-variant);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sales-rep-field input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 46px 13px 14px; /* extra right-padding for the user icon */
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--on-surface);
+            background: var(--surface-container);
+            border: 1.4px solid var(--outline-variant);
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+        .sales-rep-field input::placeholder { color: rgba(134, 142, 154, 0.7); }
+        .sales-rep-field input:focus {
+            border-color: var(--secondary); /* gold accent */
+            box-shadow: 0 0 0 3px rgba(212, 140, 36, 0.18);
+            background: var(--surface-container-high);
+        }
+
+        .sales-rep-error {
+            margin-top: 8px;
+            font-size: 12.5px;
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        /* --- Buttons --- */
+        .sales-rep-actions {
+            margin-top: 24px;
+        }
+        .sales-rep-actions .btn {
+            min-height: 48px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .sales-rep-save-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .sales-rep-save-btn > span#salesRepSaveLabel {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Header badge (top-right floating chip) --- */
+        .sales-rep-header-badge {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 80; /* below modals (z=3000), above splash & page content */
+            padding: 8px 10px 8px 12px;
+            border-radius: 999px;
+            background: var(--surface-container-high);
+            color: var(--on-surface);
+            border: 1px solid var(--outline-variant);
+            box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
+            max-width: min(260px, calc(100vw - 28px));
+        }
+        .sales-rep-header-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.3);
+            border-color: var(--secondary);
+        }
+        .sales-rep-header-badge:active { transform: translateY(0); }
+
+        body.light-mode .sales-rep-header-badge {
+            background: #ffffff;
+        }
+
+        .sr-badge-dot {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(212, 140, 36, 0.16);
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sr-badge-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right; /* RTL: the name sits right next to the pencil icon */
+        }
+        .sr-badge-pencil {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(134, 142, 154, 0.12);
+            color: var(--on-surface-variant);
+        }
+        .sales-rep-header-badge:hover .sr-badge-pencil {
+            background: rgba(212, 140, 36, 0.18);
+            color: var(--secondary);
+        }
+        /* Phone positioning — avoid clash with theme toggle (which is at top-left) */
+        @media (max-width: 600px) {
+            .sales-rep-header-badge {
+                top: auto;
+                bottom: 84px; /* above the voice FAB (~64 + 16) */
+                right: 12px;
+                padding: 7px 9px 7px 11px;
+                font-size: 12px;
+                box-shadow: 0 8px 22px -6px rgba(0, 0, 0, 0.3);
+            }
+        }
+        @media (max-width: 400px) {
+            .sr-badge-name { max-width: 120px; }
+        }
+
         /* ====== ITEMS MODULE ====== */
         /* Tabs */
         .tabs {
@@ -1511,6 +1748,7 @@
                 <p style="color: #4A4A4A; font-size: 12px; margin: 0;">FOR BAND SAW BLADE</p>
             </div>
             <div style="margin-bottom: var(--spacing-lg);">
+                <p><strong>مسؤل المبيعات:</strong> <span id="summarySalesRepName" style="color: var(--secondary);"></span></p>
                 <p><strong>العميل:</strong> <span id="summaryCustomerName"></span></p>
                 <p><strong>إجمالي الأصناف:</strong> <span id="summaryTotalCount"></span></p>
             </div>
@@ -1583,6 +1821,351 @@
             </div>
         </div>
     </div>
+
+    <!-- ===================================================================
+         FIRST-LAUNCH + ON-DEMAND  —  Sales Representative Name Dialog
+         (Exactly mirrors the Flutter app's _FirstLaunchSalesRepDialog)
+         • First-launch: no cancel button, mandatory name, opaque bg.
+         • On-demand edit (via header button): shows Cancel + Close (X)
+           buttons, name pre-filled with what's in localStorage.
+         =================================================================== -->
+    <div id="salesRepOverlay" class="modal-overlay sales-rep-overlay">
+        <div class="modal sales-rep-modal">
+            <!-- header row: icon + title + (optional X) -->
+            <div class="sales-rep-header">
+                <div class="sales-rep-icon" aria-hidden="true">
+                    <!-- badge icon -->
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <h3 class="cairo-font sales-rep-title" id="salesRepDialogTitle">أدخل اسم مسؤل المبيعات</h3>
+                <button type="button" id="salesRepCloseBtn" class="sales-rep-close" aria-label="إغلاق" title="إغلاق" style="display:none">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="sales-rep-subtitle" id="salesRepDialogSubtitle">
+                يجب إدخال اسم مسؤل المبيعات أول مرة لتشغيل النظام. الاسم سيظهر في كل بيانات الطلب والتصدير.
+            </p>
+
+            <form id="salesRepForm" class="sales-rep-form" novalidate autocomplete="off">
+                <label for="salesRepNameInput" class="sales-rep-label">اسم مسؤل المبيعات</label>
+                <div class="sales-rep-field">
+                    <span class="sales-rep-prefix-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="salesRepNameInput"
+                        placeholder="مثال: أحمد محمود"
+                        maxlength="60"
+                        required
+                        autofocus
+                    >
+                </div>
+                <div id="salesRepError" class="sales-rep-error" style="display:none"></div>
+
+                <div class="modal-actions sales-rep-actions">
+                    <button type="button" class="btn btn-secondary" id="salesRepCancelBtn" style="display:none">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        <span>إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary sales-rep-save-btn" id="salesRepSaveBtn">
+                        <span class="spinner-inline" id="salesRepSpinner" style="display:none"></span>
+                        <span id="salesRepSaveLabel">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>حفظ</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ================================================================
+         * SALES REPRESENTATIVE — on-device persistent name
+         * (mirrors the Flutter AppSettingsService's behaviour)
+         * ================================================================ */
+        (function registerSalesRepModule() {
+            const STORAGE_KEY = 'german.sales_rep_name';
+            const HEADER_BADGE_KEY = 'german.header.sales_rep_badge_added_v1';
+
+            /**
+             * Reads the currently saved sales-rep name from localStorage,
+             * trimmed.  Returns empty string if never set.
+             */
+            function getSalesRepName() {
+                try {
+                    return (localStorage.getItem(STORAGE_KEY) || '').trim();
+                } catch (_) {
+                    return '';
+                }
+            }
+
+            /** Persists name + fires a custom event so the rest of the page can react. */
+            function setSalesRepName(name) {
+                const trimmed = (name || '').trim();
+                if (trimmed.length < 2) return false;
+                try {
+                    localStorage.setItem(STORAGE_KEY, trimmed);
+                } catch (_) {
+                    return false;
+                }
+                window.dispatchEvent(new CustomEvent('sales-rep:changed', { detail: { name: trimmed } }));
+                return true;
+            }
+
+            /**
+             * Opens the dialog.
+             *   mode='first-launch'  →  no cancel/X, opaque bg, mandatory save.
+             *   mode='edit'          →  shows cancel/X, semi-transparent bg, pre-filled.
+             */
+            function openDialog({ mode = 'first-launch' } = {}) {
+                const overlay  = document.getElementById('salesRepOverlay');
+                const title    = document.getElementById('salesRepDialogTitle');
+                const subtitle = document.getElementById('salesRepDialogSubtitle');
+                const closeBtn = document.getElementById('salesRepCloseBtn');
+                const cancelBtn= document.getElementById('salesRepCancelBtn');
+                const input    = document.getElementById('salesRepNameInput');
+                const err      = document.getElementById('salesRepError');
+
+                if (!overlay) return;
+
+                // paint mode visuals
+                overlay.classList.remove('sr-first-launch', 'sr-edit-mode');
+                if (mode === 'edit') {
+                    overlay.classList.add('sr-edit-mode');
+                    title.textContent    = 'تعديل اسم مسؤل المبيعات';
+                    subtitle.textContent = 'عدّل اسم مسؤل المبيعات الظاهر في بيانات الطلب والتصدير، ثم اضغط حفظ.';
+                    closeBtn.style.display  = '';
+                    cancelBtn.style.display = '';
+                    input.value = getSalesRepName();
+                } else {
+                    overlay.classList.add('sr-first-launch');
+                    title.textContent    = 'أدخل اسم مسؤل المبيعات';
+                    subtitle.textContent = 'يجب إدخال اسم مسؤل المبيعات أول مرة لتشغيل النظام. الاسم سيظهر في كل بيانات الطلب والتصدير.';
+                    closeBtn.style.display  = 'none';
+                    cancelBtn.style.display = 'none';
+                    input.value = '';
+                }
+
+                // clear error, show overlay, focus input after paint
+                err.style.display = 'none';
+                err.textContent = '';
+                overlay.style.display = 'flex';
+                setTimeout(() => input.focus({ preventScroll: true }), 40);
+            }
+
+            /** Closes the dialog (safe to call multiple times). */
+            function closeDialog() {
+                const overlay = document.getElementById('salesRepOverlay');
+                if (overlay) overlay.style.display = 'none';
+            }
+
+            /** Wire up the <form> submit + cancel/X buttons. Runs once at DOM ready. */
+            function initDialogInteractions() {
+                const form     = document.getElementById('salesRepForm');
+                const overlay  = document.getElementById('salesRepOverlay');
+                const cancelBtn= document.getElementById('salesRepCancelBtn');
+                const closeBtn = document.getElementById('salesRepCloseBtn');
+                const input    = document.getElementById('salesRepNameInput');
+                const errEl    = document.getElementById('salesRepError');
+                const spinner  = document.getElementById('salesRepSpinner');
+                const label    = document.getElementById('salesRepSaveLabel');
+
+                function validateAndSubmit(e) {
+                    if (e) e.preventDefault();
+                    const val = (input.value || '').trim();
+                    if (val.length < 2) {
+                        errEl.textContent = val.length === 0
+                            ? 'الرجاء إدخال اسم مسؤل المبيعات'
+                            : 'الاسم قصير جداً';
+                        errEl.style.display = '';
+                        input.focus({ preventScroll: true });
+                        return;
+                    }
+
+                    // brief "saving" UX — mirrors the Flutter dialog's 220ms feel
+                    spinner.style.display = '';
+                    label.style.opacity = '0.6';
+                    setTimeout(() => {
+                        const ok = setSalesRepName(val);
+                        spinner.style.display = 'none';
+                        label.style.opacity = '';
+                        if (ok) {
+                            closeDialog();
+                            showToast(
+                                overlay.classList.contains('sr-edit-mode')
+                                    ? 'تم تحديث اسم مسؤل المبيعات'
+                                    : 'تم حفظ الاسم، مرحباً بك 👋'
+                            );
+                        } else {
+                            errEl.textContent = 'تعذر حفظ الاسم، حاول مرة أخرى';
+                            errEl.style.display = '';
+                        }
+                    }, 220);
+                }
+
+                form.addEventListener('submit', validateAndSubmit);
+
+                function cancel() {
+                    // Cancel is ONLY meaningful in edit mode.  First-launch
+                    // overlay keeps the close/cancel buttons hidden — but
+                    // defensively we only allow closing when sr-edit-mode is
+                    // active (otherwise user would get stuck with no name).
+                    if (overlay.classList.contains('sr-edit-mode')) {
+                        closeDialog();
+                    }
+                }
+                cancelBtn.addEventListener('click', cancel);
+                closeBtn.addEventListener('click', cancel);
+
+                // ESC closes ONLY when in edit mode (first-launch: must save)
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && overlay.style.display === 'flex' && overlay.classList.contains('sr-edit-mode')) {
+                        cancel();
+                    }
+                });
+
+                // backdrop click = cancel, BUT only in edit mode.
+                overlay.addEventListener('mousedown', (e) => {
+                    if (e.target === overlay && overlay.classList.contains('sr-edit-mode')) {
+                        cancel();
+                    }
+                });
+            }
+
+            /**
+             * Injects a small sales-rep CHIP into the TOP-RIGHT of the header
+             * (next to the theme toggle).  Tap → opens the dialog in EDIT mode.
+             * Shows the current name; never injected twice.
+             */
+            function injectHeaderBadge() {
+                if (document.getElementById('salesRepHeaderBadge')) return;
+
+                // The page already has a .theme-toggle absolute-positioned
+                // button at top-left.  We anchor our chip to the TOP-RIGHT,
+                // just below the app bar, with a higher z than the page content
+                // but lower than modal overlays.
+                const badge = document.createElement('button');
+                badge.type = 'button';
+                badge.id = 'salesRepHeaderBadge';
+                badge.className = 'sales-rep-header-badge';
+                badge.title = 'اضغط لتعديل اسم مسؤل المبيعات';
+                badge.innerHTML = `
+                    <span class="sr-badge-dot" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <span class="sr-badge-name" id="salesRepHeaderBadgeName">مسؤل المبيعات</span>
+                    <span class="sr-badge-pencil" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                    </span>
+                `;
+                badge.addEventListener('click', () => openDialog({ mode: 'edit' }));
+                document.body.appendChild(badge);
+
+                // initial paint
+                updateHeaderBadgeName(getSalesRepName());
+            }
+
+            function updateHeaderBadgeName(name) {
+                const el = document.getElementById('salesRepHeaderBadgeName');
+                if (!el) return;
+                const n = (name || '').trim();
+                if (n) {
+                    el.textContent = n.length > 18 ? n.slice(0, 17) + '…' : n;
+                } else {
+                    el.textContent = 'مسؤل المبيعات';
+                }
+            }
+
+            /**
+             * Hooks into the existing showSummaryBtn handler AFTER the original
+             * listener runs — by listening for the custom DOM event we fire
+             * when the summary is shown.
+             *
+             * We monkey-patch the existing handler in a non-destructive way:
+             * after the summary is rendered we set summarySalesRepName span.
+             */
+            function bindSummaryRendering() {
+                // The existing click listener writes summaryCustomerName +
+                // summaryTotalCount + summaryItems on EVERY click (it doesn't
+                // cache them).  We simply write our sales-rep line on every
+                // click too, AFTER the existing handler has had time to run.
+                //
+                // We use a capture-phase click listener with setTimeout(0) to
+                // ensure we run AFTER the bubbling listener already attached
+                // by the existing code.
+                document.getElementById('showSummaryBtn').addEventListener('click', () => {
+                    setTimeout(() => {
+                        const el = document.getElementById('summarySalesRepName');
+                        if (el) {
+                            const name = getSalesRepName();
+                            el.textContent = name || 'غير محدد';
+                        }
+                    }, 0);
+                }, true); // capture phase → runs before bubble, but setTimeout(0) pushes us after all handlers
+
+                // Also react to name changes WHILE the summary is already
+                // visible so the user sees the new name in real-time.
+                window.addEventListener('sales-rep:changed', (e) => {
+                    const summaryDiv = document.getElementById('orderSummary');
+                    if (summaryDiv && summaryDiv.style.display === 'block') {
+                        const el = document.getElementById('summarySalesRepName');
+                        if (el) el.textContent = e.detail.name || 'غير محدد';
+                    }
+                    updateHeaderBadgeName(e.detail.name || '');
+                });
+            }
+
+            // -----------------------------------------------------------------
+            // Public API — exposed on window so future modules can reuse.
+            // -----------------------------------------------------------------
+            window.GermanSalesRep = {
+                getName: getSalesRepName,
+                setName: setSalesRepName,
+                openEditDialog: () => openDialog({ mode: 'edit' }),
+                _openFirstLaunch: () => openDialog({ mode: 'first-launch' }),
+            };
+
+            // -----------------------------------------------------------------
+            // Auto-init when DOM is ready.
+            // -----------------------------------------------------------------
+            document.addEventListener('DOMContentLoaded', () => {
+                initDialogInteractions();
+                injectHeaderBadge();
+                bindSummaryRendering();
+
+                // FIRST-LAUNCH LOGIC: if no name was ever saved → BLOCKING dialog.
+                if (!getSalesRepName()) {
+                    // Small 300ms delay so the splash screen finishes painting
+                    // first — otherwise the dialog competes with the splash
+                    // fade-in animation and looks janky.
+                    setTimeout(() => openDialog({ mode: 'first-launch' }), 320);
+                }
+            });
+        })();
+    </script>
 
     <script>
         // Master Product Data (Embedded to bypass CORS when running without a server)
