@@ -2006,16 +2006,27 @@
          WhatsApp / Telegram — URL intent schemes ALWAYS work on mobile,
          even in WebViews or very old browsers.
          =================================================================== -->
+    <!-- ===================================================================
+         SHARE OPTIONS FALLBACK ACTION SHEET
+         — Only appears when native navigator.share({files:[...]}) truly
+           fails on a specific browser.
+         — Contains ONLY image-sharing options:
+             • Native OS share (image file attached via system sheet)
+             • Save image locally (already auto-saved, but user can retry)
+             • Cancel
+         — PURPOSELY removed the WhatsApp/Telegram URL-intent shortcuts,
+           because they send TEXT ONLY (no attached image) and were
+           confusing users who expected image sharing.
+         =================================================================== -->
     <div id="shareOptionsOverlay" class="modal-overlay share-options-overlay" aria-hidden="true">
-        <!-- Invisible dim area; click outside closes -->
         <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle">
             <!-- -------------- Drag-handle (mobile feel) -------------- -->
             <div class="share-handle" aria-hidden="true"></div>
 
             <h3 class="cairo-font share-title" id="shareSheetTitle">شارك صورة الطلبية</h3>
-            <p class="share-subtitle">اختر الطريقة اللي تناسبك. الصورة بتتحفظ تلقائيًا في جهازك قبل المشاركة.</p>
+            <p class="share-subtitle">الصورة مرفقة تلقائيًا في مشاركة النظام، ومحفوظة في Downloads.</p>
 
-            <!-- Option 1: NATIVE OS share sheet (Web Share API) ----------------- -->
+            <!-- Option 1: NATIVE OS share sheet (Web Share API with FILES) --- -->
             <button type="button" class="share-option share-option-primary" id="shareOptNative">
                 <span class="share-icon share-icon-native" aria-hidden="true">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2025,40 +2036,12 @@
                 </span>
                 <div class="share-option-body">
                     <div class="share-option-title">مشاركة عبر نظام الموبايل</div>
-                    <div class="share-option-sub">يفتح قائمة WhatsApp / Telegram / Gmail / SMS من جهازك</div>
+                    <div class="share-option-sub">الصورة مرفقة تلقائيًا — اختر واتساب / ماسنجر / تيليجرام / إلخ</div>
                 </div>
                 <span class="share-option-arrow" aria-hidden="true">‹</span>
             </button>
 
-            <!-- Option 2: WHATSAPP deep-link ----------------------------------- -->
-            <button type="button" class="share-option" id="shareOptWhatsapp">
-                <span class="share-icon share-icon-whatsapp" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.966-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
-                    </svg>
-                </span>
-                <div class="share-option-body">
-                    <div class="share-option-title">واتساب WhatsApp</div>
-                    <div class="share-option-sub">يفتح واتساب مباشرة مع نص الطلبية مكتوب</div>
-                </div>
-                <span class="share-option-arrow" aria-hidden="true">‹</span>
-            </button>
-
-            <!-- Option 3: TELEGRAM deep-link ----------------------------------- -->
-            <button type="button" class="share-option" id="shareOptTelegram">
-                <span class="share-icon share-icon-telegram" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                        <path d="M9.037 14.962l-.391 5.564c.561 0 .803-.241 1.093-.532l2.583-2.452 5.39 3.955c.988.547 1.69.26 1.955-.914l3.54-16.607c.33-1.513-.549-2.1-1.524-1.75L1.433 9.966C-.06 10.563-.062 11.487.9 11.8l5.45 1.692L18.19 5.54c.498-.329.95-.148.587.187"></path>
-                    </svg>
-                </span>
-                <div class="share-option-body">
-                    <div class="share-option-title">تيليجرام Telegram</div>
-                    <div class="share-option-sub">يفتح تيليجرام مباشرة مع نص الطلبية</div>
-                </div>
-                <span class="share-option-arrow" aria-hidden="true">‹</span>
-            </button>
-
-            <!-- Option 4: SAVE IMAGE (always works) ---------------------------- -->
+            <!-- Option 2: SAVE IMAGE (always works, but already auto-saved) -- -->
             <button type="button" class="share-option" id="shareOptSave">
                 <span class="share-icon share-icon-save" aria-hidden="true">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3562,27 +3545,48 @@
 
             // --- 1. Entry point: user clicks "مشاركة الصورة" ----------------
             //
-            // NEW BEHAVIOR (per user request — "شارك الصورة نفسها مش كابشن نص"):
-            //   1. Generate summary JPG + save it to Downloads FIRST (always).
-            //   2. TRY NATIVE OS SHARE WITH THE IMAGE AS A FILE ATTACHMENT.
-            //      → This opens the ANDROID / IOS SHARE SHEET directly,
-            //        user picks WhatsApp / Messenger / Telegram / any app,
-            //        and THE IMAGE IS ALREADY ATTACHED (just like sharing a
-            //        picture from the phone's Gallery), with the caption as
-            //        the auto-pasted text description.
-            //   3. ONLY IF the native share is IMPOSSIBLE on this device/browser,
-            //      OR the user closes the share sheet without a compatible app,
-            //      THEN we FALL BACK to our bottom action-sheet with the
-            //      explicit WhatsApp / Telegram / Save buttons.
+            // ** USER EXPLICITLY REQUESTED: SHARE THE IMAGE FILE, NOT TEXT ONLY. **
             //
-            // This matches what the user asked for 100%.
+            // The previous flow had TWO bugs that broke this on iPhone / Android:
+            //
+            //   BUG 1:  We required navigator.canShare({ files: [blob] }) to be
+            //           true BEFORE trying navigator.share().  On SAFARI iOS and
+            //           certain Chrome versions, canShare() LIES and returns
+            //           false for perfectly-valid html2canvas-generated JPG blobs,
+            //           even though navigator.share() would have worked fine.
+            //           → This caused us to SKIP native file-share and jump
+            //             straight to the fallback action sheet.
+            //
+            //   BUG 2:  The fallback sheet contained "واتساب / تيليجرام" buttons
+            //           that opened api.whatsapp.com / t.me URL intents — which
+            //           SEND TEXT CAPTION ONLY, NO IMAGE.
+            //           The user was clicking these by mistake (because they have
+            //           official WhatsApp/Telegram logos) and getting confused
+            //           when only the text arrived, no attached photo.
+            //
+            // CORRECTED FLOW (100% matches what the user asked for):
+            //   Step 1 → Generate JPG + save it to Downloads (ALWAYS, first).
+            //   Step 2 → IF `navigator.share` exists + secure-context:
+            //               CALL IT DIRECTLY WITH `{ files: [jpg], text: caption }`
+            //               — no canShare gate-keeping. If it works, GREAT — the
+            //                 user gets the NATIVE OS SHARE SHEET with the IMAGE
+            //                 FILE ALREADY ATTACHED, picks any app (WhatsApp /
+            //                 Messenger / Telegram / Mail / SMS ...) and sends.
+            //               — if it THROWS "NotSupportedError / DataError" → then
+            //                 we open the MINIMAL fallback sheet (3 options only).
+            //               — if user cancels (AbortError) → just toast that the
+            //                 image is already saved, do NOT open any sheet.
+            //   Step 3 → If navigator.share not available at all → open the
+            //            minimal 3-option fallback sheet.
+            //
+            // Fallback sheet contains 3 buttons ONLY — no text-only shortcuts:
+            //   [ مشاركة عبر نظام الموبايل (يرجع يحاول navigator.share تاني) ]
+            //   [ حفظ الصورة في الجهاز  ]
+            //   [ إلغاء ]
             document.getElementById('shareImageBtn').addEventListener('click', async () => {
                 showToast('جاري تحضير الصورة وحفظها في جهازك...');
                 try {
                     // Step 1 — ALWAYS generate and save JPG first.
-                    // User can never lose the rendered data even if they tap
-                    // "Cancel" on every subsequent dialog — image is in
-                    // gallery and ready to attach manually if they want.
                     const rendered = await renderSummaryToJpegFile();
                     lastShare = {
                         dataUrl: rendered.dataUrl,
@@ -3595,17 +3599,14 @@
                     };
                     downloadLastShare();
 
-                    // --- Step 2 — Try NATIVE SHARE with the IMAGE FILE first ---
-                    // We are ALREADY inside a user-gesture (click handler) so
-                    // the browser's autoplay/share-gate security restrictions
-                    // are satisfied 100% of the time.
-                    const canNative =
-                        typeof navigator.share === 'function' &&
-                        typeof navigator.canShare === 'function' &&
-                        window.isSecureContext &&
-                        !!navigator.canShare({ files: [lastShare.file] });
+                    // --- Step 2 — Try NATIVE SHARE WITH FILES FIRST. -----------
+                    // We're inside a user gesture so share-gate passes 100%.
+                    // We INTENTIONALLY do NOT use canShare() as a gatekeeper —
+                    // too many browsers lie about file support. We just try.
+                    const hasShareFn =
+                        typeof navigator.share === 'function' && window.isSecureContext;
 
-                    if (canNative) {
+                    if (hasShareFn) {
                         try {
                             showToast('تم حفظ الصورة ✓ — جاري فتح قائمة المشاركة...');
                             await navigator.share({
@@ -3613,25 +3614,28 @@
                                 text:  lastShare.captionText,
                                 files: [lastShare.file],
                             });
-                            // If we reach here, the native share succeeded.
-                            closeShareSheet(); // just in case it was open
+                            // SUCCESS path: native share completed.
+                            closeShareSheet();
                             showToast('تمت المشاركة بنجاح ✓');
-                            return; // 👈 do NOT open the bottom action sheet.
+                            return;
                         } catch (err) {
-                            // User simply tapped outside/closed the sheet —
-                            // that's fine, no error toast.
-                            if (err && err.name === 'AbortError') {
+                            if (!err) { closeShareSheet(); return; }
+                            // User tapped outside / closed the share dialog.
+                            // Image is already saved — just confirm + stop.
+                            if (err.name === 'AbortError') {
                                 showToast('تم حفظ الصورة ✓ في جهازك');
                                 return;
                             }
-                            // Any other native-share error → fall through to
-                            // our fallback action sheet below.
-                            console.warn('Native share skipped — using fallback:', err);
+                            // Real error (e.g. browser doesn't support FILE
+                            // sharing even though navigator.share exists).
+                            // → fall through to the minimal fallback sheet.
+                            console.warn('Native share failed — fallback sheet:', err);
                         }
                     }
 
-                    // --- Step 3 — FALLBACK: show bottom sheet with explicit buttons.
-                    showToast('تم حفظ الصورة ✓ — اختر طريقة المشاركة');
+                    // --- Step 3 — FALLBACK: minimal 3-option sheet. -------------
+                    // (No WhatsApp/Telegram text-only shortcuts to avoid user confusion.)
+                    showToast('تم حفظ الصورة ✓ — اختر الطريقة');
                     setTimeout(openShareSheet, 160);
                 } catch (err) {
                     console.error('Share render failed:', err);
@@ -3639,19 +3643,17 @@
                 }
             });
 
-            // --- 2. Option A: Native OS share (navigator.share + files) ----
+            // --- 2. Option A (in sheet): Native OS share (navigator.share + files)
             document.getElementById('shareOptNative').addEventListener('click', async () => {
                 if (!lastShare) return;
+                const hasShareFn =
+                    typeof navigator.share === 'function' && window.isSecureContext;
+                if (!hasShareFn) {
+                    showToast('مشاركة الملفات غير مدعومة هنا — الصورة محفوظة في Downloads');
+                    return;
+                }
                 try {
-                    const hasNative =
-                        typeof navigator.share === 'function' &&
-                        typeof navigator.canShare === 'function' &&
-                        window.isSecureContext &&
-                        !!navigator.canShare({ files: [lastShare.file] });
-                    if (!hasNative) {
-                        showToast('مشاركة الملفات غير مدعومة هنا، استخدم واتساب / تيليجرام');
-                        return;
-                    }
+                    // No canShare gatekeeping — try directly (same fix as entry-point).
                     await navigator.share({
                         title: 'طلبية GERMAN',
                         text: lastShare.captionText,
@@ -3666,50 +3668,14 @@
                 }
             });
 
-            // --- 3. Option B: WhatsApp custom URL scheme ------------------
-            // whatsapp://send?text=… works on 100% of Android Chrome / iOS Safari
-            // for phones that have WhatsApp installed.  caption is auto-pasted
-            // into the chat input, user only needs to pick a contact + tap "+"
-            // (the JPG is already saved, so they attach from Photos/Downloads).
-            document.getElementById('shareOptWhatsapp').addEventListener('click', () => {
-                if (!lastShare) return;
-                closeShareSheet();
-                try {
-                    const text = encodeURIComponent(lastShare.captionText);
-                    // Use the universal API.whatsapp.com link — works better
-                    // than the old whatsapp:// scheme on iOS 15+ and still
-                    // opens the app on Android. If no app is installed, the
-                    // browser falls back to WhatsApp Web page gracefully.
-                    const url = 'https://api.whatsapp.com/send?text=' + text;
-                    window.open(url, '_blank', 'noopener');
-                    showToast('تم فتح واتساب ✓ — الصورة محفوظة في جهازك');
-                } catch (_) {
-                    showToast('تعذر فتح واتساب');
-                }
-            });
-
-            // --- 4. Option C: Telegram custom URL scheme -------------------
-            document.getElementById('shareOptTelegram').addEventListener('click', () => {
-                if (!lastShare) return;
-                closeShareSheet();
-                try {
-                    const text = encodeURIComponent(lastShare.captionText);
-                    const url = 'https://t.me/share/url?url=&text=' + text;
-                    window.open(url, '_blank', 'noopener');
-                    showToast('تم فتح تيليجرام ✓ — الصورة محفوظة في جهازك');
-                } catch (_) {
-                    showToast('تعذر فتح تيليجرام');
-                }
-            });
-
-            // --- 5. Option D: Just save + close ----------------------------
+            // --- 3. Option B (in sheet): Just save + close ------------------
             document.getElementById('shareOptSave').addEventListener('click', () => {
                 closeShareSheet();
                 // File was already saved on button-click entry; just confirm.
                 showToast('الصورة موجودة في مجلد Downloads في جهازك ✓');
             });
 
-            // --- 6. Cancel / backdrop / ESC --------------------------------
+            // --- 4. Cancel / backdrop / ESC --------------------------------
             document.getElementById('shareOptCancel').addEventListener('click', closeShareSheet);
             document.getElementById('shareOptionsOverlay').addEventListener('mousedown', (e) => {
                 if (e.target && e.target.id === 'shareOptionsOverlay') closeShareSheet();
