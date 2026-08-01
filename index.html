@@ -1667,9 +1667,26 @@
         <!-- Customer Information Card -->
         <div class="card">
             <h2 class="card-title">بيانات العميل</h2>
-            <div class="form-group">
-                <label for="customerName">اسم العميل</label>
-                <input type="text" id="customerName" placeholder="أدخل اسم العميل...">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="customerName">اسم العميل</label>
+                    <input type="text" id="customerName" placeholder="أدخل اسم العميل...">
+                </div>
+                <div class="form-group">
+                    <label for="documentType">نوع المستند</label>
+                    <select id="documentType" autocomplete="off">
+                        <option value="فاتورة" selected>فاتورة</option>
+                        <option value="بيان">بيان</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="deliveryMethod">طريقة التسليم</label>
+                    <select id="deliveryMethod" autocomplete="off">
+                        <option value="شحن" selected>شحن</option>
+                        <option value="شركه">شركه</option>
+                        <option value="مندوب">مندوب</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -1767,6 +1784,8 @@
             </div>
             <div style="margin-bottom: var(--spacing-lg);">
                 <p><strong>مسؤل المبيعات:</strong> <span id="summarySalesRepName" style="color: var(--orange); font-weight: bold;"></span></p>
+                <p><strong>نوع المستند:</strong> <span id="summaryDocumentType" style="font-weight: 700;"></span></p>
+                <p><strong>طريقة التسليم:</strong> <span id="summaryDeliveryMethod" style="font-weight: 700;"></span></p>
                 <p><strong>العميل:</strong> <span id="summaryCustomerName"></span></p>
                 <p><strong>إجمالي الأصناف:</strong> <span id="summaryTotalCount"></span></p>
             </div>
@@ -2892,14 +2911,40 @@
         const addProductBtn = document.getElementById('addProductBtn');
         const productList = document.getElementById('productList');
         const customerName = document.getElementById('customerName');
+        const documentType = document.getElementById('documentType');
+        const deliveryMethod = document.getElementById('deliveryMethod');
         const removeAllBtn = document.getElementById('removeAllBtn');
         const modalOverlay = document.getElementById('modalOverlay');
         const toast = document.getElementById('toast');
 
+        // Persistence keys for "type of document" and "delivery method" so the
+        // operator doesn't have to re-select them every visit (they almost
+        // always use the same defaults).
+        const LS_DOCUMENT_TYPE   = 'german.order.document_type';
+        const LS_DELIVERY_METHOD = 'german.order.delivery_method';
+
         // Initialize
         function init() {
+            // ---- Restore user's last-used defaults (if any) for the new selects
+            try {
+                const dt = localStorage.getItem(LS_DOCUMENT_TYPE);
+                if (dt) documentType.value = dt;
+            } catch (_) {}
+            try {
+                const dm = localStorage.getItem(LS_DELIVERY_METHOD);
+                if (dm) deliveryMethod.value = dm;
+            } catch (_) {}
+
             renderProducts();
         }
+
+        // ---- Live-persist the selects whenever they change --------------------
+        documentType.addEventListener('change', () => {
+            try { localStorage.setItem(LS_DOCUMENT_TYPE, documentType.value); } catch (_) {}
+        });
+        deliveryMethod.addEventListener('change', () => {
+            try { localStorage.setItem(LS_DELIVERY_METHOD, deliveryMethod.value); } catch (_) {}
+        });
 
         // Search Functionality
         productSearch.addEventListener('input', (e) => {
@@ -3082,7 +3127,10 @@
             const isVisible = summaryDiv.style.display === 'block';
             
             if (!isVisible) {
+                // --- Basic fields (sales rep is rendered by its module on event)
                 document.getElementById('summaryCustomerName').textContent = customerName.value || 'غير محدد';
+                document.getElementById('summaryDocumentType').textContent  = documentType.value || 'غير محدد';
+                document.getElementById('summaryDeliveryMethod').textContent = deliveryMethod.value || 'غير محدد';
                 document.getElementById('summaryTotalCount').textContent = orderItems.length;
                 document.getElementById('summaryItems').innerHTML = orderItems.map(item => `
                     <div class="summary-card">
@@ -3241,12 +3289,15 @@
                     return;
                 }
 
-                // Real native share — include the sales-rep name + customer name
-                // in the share subject/text so WhatsApp chats automatically fill caption!
+                // Real native share — include the sales-rep name + document type +
+                // delivery method + customer name in the share subject/text so
+                // WhatsApp chats automatically fill the caption with full context!
                 const salesRep = ((window.GermanSalesRep && window.GermanSalesRep.getName)
                     ? window.GermanSalesRep.getName() || '' : '').trim();
                 const parts = [];
                 if (salesRep) parts.push('مسؤل المبيعات: ' + salesRep);
+                if (documentType.value) parts.push('نوع المستند: ' + documentType.value);
+                if (deliveryMethod.value) parts.push('طريقة التسليم: ' + deliveryMethod.value);
                 if (customerSafe && customerSafe !== 'Order') parts.push('العميل: ' + customerSafe);
                 parts.push('طلبية GERMAN - ' + new Date().toLocaleDateString('ar-EG'));
 
