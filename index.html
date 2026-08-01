@@ -3502,17 +3502,57 @@
                 }
             }
 
-            /** Builds the share caption (used by both native share + URLs). */
-            function buildCaption({ customerSafe }) {
-                const salesRep = ((window.GermanSalesRep && window.GermanSalesRep.getName)
-                    ? window.GermanSalesRep.getName() || '' : '').trim();
-                const parts = [];
-                if (salesRep) parts.push('مسؤل المبيعات: ' + salesRep);
-                if (documentType && documentType.value) parts.push('نوع المستند: ' + documentType.value);
-                if (deliveryMethod && deliveryMethod.value) parts.push('طريقة التسليم: ' + deliveryMethod.value);
-                if (customerSafe && customerSafe !== 'Order') parts.push('العميل: ' + customerSafe);
-                parts.push('طلبية GERMAN - ' + new Date().toLocaleDateString('ar-EG'));
-                return parts.join('\n');
+            /** Builds the share caption (used by both native share + URLs).
+             *
+             *  WHAT WAS WRONG BEFORE:
+             *   - Label on LEFT  :   "مسؤل المبيعات: محمد"
+             *   - WhatsApp auto-flips to LTR because "محمّد" has weak directionality
+             *     next to a colon, so the text ended up reversed on some lines
+             *     and the SALES-REP name was being truncated by the badge
+             *     (18-char ellipsis) being accidentally used here instead of the
+             *     FULL name that's stored in localStorage.
+             *
+             *  FIXED BEHAVIOR (matches the summary image the user attached):
+             *   • Each line is rendered as  "VALUE :العنوان بالعربي"
+             *     so WhatsApp ALWAYS draws the Arabic label flush-RIGHT,
+             *     and the value on the LEFT of the colon (just like the
+             *     printed JPG summary cards).
+             *   • We prefix EVERY line with U+202B (RLI / Right-to-Left
+             *     Isolate) to force even pure-English names like "Mohamed
+             *     Hamdy" to render in the correct RTL layout inside WhatsApp.
+             *   • Date uses AR-EG locale but "طلبية GERMAN" line remains last
+             *     exactly like in the sample image.
+             *   • We explicitly pass FULL sales-rep + customer names (we pull
+             *     them straight from the storage inputs, NEVER from the
+             *     18-char truncated badge which was only meant for the chip).
+             */
+            function buildCaption({ customerSafe, count }) {
+                const RLI = '\u202B'; // Right-to-Left Isolate — forces correct RTL in ALL apps
+                const RLM = '\u200F'; // Right-to-Left Mark      — guards weak characters
+                const salesRep = (
+                    (window.GermanSalesRep && typeof window.GermanSalesRep.getName === 'function')
+                        ? window.GermanSalesRep.getName() || ''
+                        : localStorage.getItem('german.sales_rep_name') || ''
+                ).trim();
+                const customerRaw = (typeof customerName !== 'undefined' && customerName && customerName.value)
+                    ? customerName.value
+                    : ((customerSafe && customerSafe !== 'Order') ? customerSafe : '');
+                const customer = customerRaw.trim();
+                const docType  = (documentType && documentType.value) ? documentType.value.trim() : '';
+                const delivery = (deliveryMethod && deliveryMethod.value) ? deliveryMethod.value.trim() : '';
+                const countTxt = (typeof count === 'number') ? String(count) : String(orderItems ? orderItems.length : 0);
+                const dateTxt = new Date().toLocaleDateString('ar-EG');
+
+                // Each line pattern:   RLI  +  "VALUE :التسمية"
+                // This matches the SUMMARY CARDS layout in the user's screenshot exactly.
+                const lines = [];
+                if (salesRep) lines.push(RLI + salesRep + RLM + ' :مسؤل المبيعات');
+                if (docType)  lines.push(RLI + docType  + RLM + ' :نوع المستند');
+                if (delivery) lines.push(RLI + delivery + RLM + ' :طريقة التسليم');
+                if (customer) lines.push(RLI + customer + RLM + ' :العميل');
+                lines.push(RLI + countTxt + RLM + ' :إجمالي الأصناف');
+                lines.push(RLI + dateTxt  + RLM + ' :طلبية GERMAN');
+                return lines.join('\n');
             }
 
             // --- 1. Entry point: user clicks "مشاركة الصورة" ----------------
@@ -3528,7 +3568,10 @@
                         dataUrl: rendered.dataUrl,
                         fileName: rendered.fileName,
                         file: rendered.file,
-                        captionText: buildCaption({ customerSafe: rendered.customerSafe }),
+                        captionText: buildCaption({
+                            customerSafe: rendered.customerSafe,
+                            count: orderItems ? orderItems.length : 0,
+                        }),
                     };
                     downloadLastShare(); // 👈 auto-save to device RIGHT NOW
                     showToast('تم حفظ الصورة ✓ — اختر طريقة المشاركة');
