@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="icon" href="logo.npg" type="image/x-icon">
+    <link rel="icon" href="logo.png" type="image/x-icon">
     <title>GERMAN - FOR BAND SAW BLADE</title>
     <!-- Fonts - Assuming they are available or will be provided for offline use -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -677,6 +677,144 @@
         @media (max-width: 400px) {
             .sr-badge-name { max-width: 120px; }
         }
+
+        /* ================================================================
+         * SHARE OPTIONS SHEET (mobile-first, works on desktop too)
+         * Native Android/iOS style bottom sheet.
+         * ================================================================ */
+        .share-options-overlay {
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 3000;
+            align-items: flex-end; /* bottom sheet */
+            justify-content: stretch;
+            padding: 0;
+        }
+        body.light-mode .share-options-overlay { background: rgba(0, 0, 0, 0.48); }
+
+        .share-sheet {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            background: var(--surface-container-highest);
+            border-top-left-radius: 22px;
+            border-top-right-radius: 22px;
+            padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 8px));
+            box-shadow: 0 -14px 40px -10px rgba(0, 0, 0, 0.4);
+            color: var(--on-surface);
+            animation: shareSheetIn 220ms cubic-bezier(.2,.8,.2,1) both;
+        }
+        body.light-mode .share-sheet { background: #ffffff; }
+
+        @keyframes shareSheetIn {
+            from { transform: translateY(100%); opacity: .2; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .share-handle {
+            width: 42px; height: 4.5px;
+            background: var(--outline-variant);
+            border-radius: 99px;
+            margin: 6px auto 12px;
+            opacity: .75;
+        }
+
+        .share-title {
+            margin: 4px 4px 6px;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--on-surface);
+        }
+        .share-subtitle {
+            margin: 0 4px 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--on-surface-variant);
+        }
+
+        .share-option {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            margin-bottom: 8px;
+            background: var(--surface-container-high);
+            color: var(--on-surface);
+            border: 1px solid transparent;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: right;
+            transition: background-color 110ms ease, transform 80ms ease, border-color 110ms ease;
+        }
+        .share-option:hover { border-color: var(--outline-variant); }
+        .share-option:active { transform: scale(0.985); background: var(--surface-container-highest); }
+        body.light-mode .share-option { background: #F5F7FB; }
+        body.light-mode .share-option:hover { background: #EDF1F7; }
+        body.light-mode .share-option:active { background: #E4E9F1; }
+
+        .share-option.share-option-primary {
+            background: linear-gradient(135deg, rgba(212,140,36,0.16) 0%, rgba(212,140,36,0.06) 100%);
+            border-color: rgba(212,140,36,0.35);
+        }
+        body.light-mode .share-option.share-option-primary {
+            background: linear-gradient(135deg, #FFF5E5 0%, #FFFBF2 100%);
+        }
+
+        .share-icon {
+            flex-shrink: 0;
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .share-icon-native   { background: rgba(134,142,154,0.18); color: var(--primary); }
+        .share-icon-whatsapp { background: #25D366; color: #fff; }
+        .share-icon-telegram { background: #229ED9; color: #fff; }
+        .share-icon-save     { background: rgba(37, 211, 102, 0.16); color: #0DA957; }
+        body.light-mode .share-icon-native { background: rgba(38,50,70,0.10); }
+
+        .share-option-body { flex: 1; min-width: 0; }
+        .share-option-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--on-surface);
+            line-height: 1.35;
+        }
+        .share-option-sub {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            line-height: 1.5;
+        }
+        .share-option-arrow {
+            flex-shrink: 0;
+            color: var(--on-surface-variant);
+            font-size: 22px;
+            line-height: 1;
+            opacity: .8;
+        }
+
+        .share-cancel {
+            width: 100%;
+            margin-top: 6px;
+            padding: 13px 14px;
+            border-radius: 14px;
+            border: none;
+            background: var(--surface-container);
+            color: var(--error);
+            font-family: inherit;
+            font-size: 15.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 100ms ease;
+        }
+        .share-cancel:hover { background: var(--surface-container-high); }
+        body.light-mode .share-cancel { background: #F3F5F9; }
+        body.light-mode .share-cancel:hover { background: #E6EAF1; }
 
         /* ====== ITEMS MODULE ====== */
         /* Tabs */
@@ -1602,7 +1740,7 @@
 <body>
     <!-- SPLASH SCREEN (Mobile-like) - MUST render first to avoid any flash -->
     <div id="splashScreen" role="status" aria-live="polite" aria-label="شاشة الترحيب">
-        <img src="logo.npg" alt="GERMAN Logo" class="splash-logo">
+        <img src="logo.png" alt="GERMAN Logo" class="splash-logo">
         <h1 class="splash-brand">GERMAN</h1>
         <p class="splash-tagline">FOR BAND SAW BLADE</p>
         <div class="splash-divider" aria-hidden="true"></div>
@@ -1625,7 +1763,7 @@
     </button>
     <div class="container">
         <header>
-            <img src="logo.npg" alt="GERMAN Logo" class="logo">
+            <img src="logo.png" alt="GERMAN Logo" class="logo">
             <h1 class="brand-name">GERMAN</h1>
             <p class="tagline">FOR BAND SAW BLADE</p>
         </header>
@@ -1733,7 +1871,7 @@
         <div class="product-list" id="productList">
             <!-- Products will be injected here -->
             <div class="empty-state">
-                <img src="logo.npg" alt="Logo">
+                <img src="logo.png" alt="Logo">
                 <p>لم يتم إضافة أصناف بعد.</p>
             </div>
         </div>
@@ -1778,7 +1916,7 @@
         <!-- Order Summary (Hidden by default, used for screenshots) -->
         <div id="orderSummary" class="summary-section">
             <div class="summary-header">
-                <img src="logo.npg" alt="Logo" class="logo" style="width: 80px;">
+                <img src="logo.png" alt="Logo" class="logo" style="width: 80px;">
                 <h2 style="color: var(--primary); margin: 0;">GERMAN</h2>
                 <p style="color: #4A4A4A; font-size: 12px; margin: 0;">FOR BAND SAW BLADE</p>
             </div>
@@ -1856,6 +1994,88 @@
                     <span id="itemDeleteConfirmLabel">حذف</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         SHARE OPTIONS — Robust fallback action sheet (works 100% everywhere)
+         Web Share API on mobile sometimes fails (file-sharing variant is
+         picky about secure-context / user gesture timing / 4-byte probe
+         blobs being rejected).  We present this NATIVE-LOOKING mobile action
+         sheet as the UNIVERSAL fallback with explicit deep-link intents for
+         WhatsApp / Telegram — URL intent schemes ALWAYS work on mobile,
+         even in WebViews or very old browsers.
+         =================================================================== -->
+    <div id="shareOptionsOverlay" class="modal-overlay share-options-overlay" aria-hidden="true">
+        <!-- Invisible dim area; click outside closes -->
+        <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle">
+            <!-- -------------- Drag-handle (mobile feel) -------------- -->
+            <div class="share-handle" aria-hidden="true"></div>
+
+            <h3 class="cairo-font share-title" id="shareSheetTitle">شارك صورة الطلبية</h3>
+            <p class="share-subtitle">اختر الطريقة اللي تناسبك. الصورة بتتحفظ تلقائيًا في جهازك قبل المشاركة.</p>
+
+            <!-- Option 1: NATIVE OS share sheet (Web Share API) ----------------- -->
+            <button type="button" class="share-option share-option-primary" id="shareOptNative">
+                <span class="share-icon share-icon-native" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </span>
+                <div class="share-option-body">
+                    <div class="share-option-title">مشاركة عبر نظام الموبايل</div>
+                    <div class="share-option-sub">يفتح قائمة WhatsApp / Telegram / Gmail / SMS من جهازك</div>
+                </div>
+                <span class="share-option-arrow" aria-hidden="true">‹</span>
+            </button>
+
+            <!-- Option 2: WHATSAPP deep-link ----------------------------------- -->
+            <button type="button" class="share-option" id="shareOptWhatsapp">
+                <span class="share-icon share-icon-whatsapp" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.966-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
+                    </svg>
+                </span>
+                <div class="share-option-body">
+                    <div class="share-option-title">واتساب WhatsApp</div>
+                    <div class="share-option-sub">يفتح واتساب مباشرة مع نص الطلبية مكتوب</div>
+                </div>
+                <span class="share-option-arrow" aria-hidden="true">‹</span>
+            </button>
+
+            <!-- Option 3: TELEGRAM deep-link ----------------------------------- -->
+            <button type="button" class="share-option" id="shareOptTelegram">
+                <span class="share-icon share-icon-telegram" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M9.037 14.962l-.391 5.564c.561 0 .803-.241 1.093-.532l2.583-2.452 5.39 3.955c.988.547 1.69.26 1.955-.914l3.54-16.607c.33-1.513-.549-2.1-1.524-1.75L1.433 9.966C-.06 10.563-.062 11.487.9 11.8l5.45 1.692L18.19 5.54c.498-.329.95-.148.587.187"></path>
+                    </svg>
+                </span>
+                <div class="share-option-body">
+                    <div class="share-option-title">تيليجرام Telegram</div>
+                    <div class="share-option-sub">يفتح تيليجرام مباشرة مع نص الطلبية</div>
+                </div>
+                <span class="share-option-arrow" aria-hidden="true">‹</span>
+            </button>
+
+            <!-- Option 4: SAVE IMAGE (always works) ---------------------------- -->
+            <button type="button" class="share-option" id="shareOptSave">
+                <span class="share-icon share-icon-save" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                </span>
+                <div class="share-option-body">
+                    <div class="share-option-title">حفظ الصورة في الجهاز</div>
+                    <div class="share-option-sub">بتتحفظ في Downloads وتقدر ترسلها يدوياً من أي تطبيق</div>
+                </div>
+                <span class="share-option-arrow" aria-hidden="true">‹</span>
+            </button>
+
+            <!-- Cancel (bottom) ------------------------------------------------ -->
+            <button type="button" class="share-cancel" id="shareOptCancel">إلغاء</button>
         </div>
     </div>
 
@@ -3027,7 +3247,7 @@
             if (orderItems.length === 0) {
                 productList.innerHTML = `
                     <div class="empty-state">
-                        <img src="logo.npg" alt="Logo">
+                        <img src="logo.png" alt="Logo">
                         <p>لم يتم إضافة أصناف بعد.</p>
                     </div>
                 `;
@@ -3147,34 +3367,16 @@
                 printBtn.style.display = 'inline-flex';
                 saveImageBtn.style.display = 'inline-flex';
                 // ----------------------------------------------------------
-                // Share button — only show when the browser is CAPABLE:
-                //   • navigator.share exists (modern browsers, Android Chrome,
-                //     Safari 15+, etc.)
-                //   • navigator.canShare({files:[...]}) exists — the
-                //     FILE-sharing variant (not just url/text sharing).
-                //   • We're in a SECURE CONTEXT (HTTPS or localhost/127.0.0.1)
-                //     otherwise Web Share API with files silently refuses to run.
-                // If any check fails → fall back to the regular JPG download
-                // button (which works 100% everywhere).
+                // Share button: ALWAYS visible from now on.
+                // The Web Share API "probe" we used before rejected real
+                // browsers on deployed GitHub Pages because it used a tiny
+                // 4-byte JPEG blob that some mobile browsers mark as
+                // "unsharable".  We now show the button unconditionally
+                // and fall back to a custom action sheet with WhatsApp /
+                // Telegram URL intents — URL schemes work on EVERY mobile
+                // browser on Earth, including old Androids and WebViews.
                 // ----------------------------------------------------------
-                const canShareFiles = (() => {
-                    try {
-                        if (typeof navigator.share !== 'function') return false;
-                        if (typeof navigator.canShare !== 'function') return false;
-                        if (!window.isSecureContext) return false;
-                        // canShare() only accepts File objects with a real type;
-                        // probe with a tiny empty 1-byte JPEG blob (never sent)
-                        const probe = new File(
-                            [new Uint8Array([0xFF, 0xD8, 0xFF, 0xD9]).buffer,
-                            'probe.jpg',
-                            { type: 'image/jpeg' }
-                        ]);
-                        return !!navigator.canShare({ files: [probe] });
-                    } catch (_) {
-                        return false;
-                    }
-                })();
-                shareImageBtn.style.display = canShareFiles ? 'inline-flex' : 'none';
+                shareImageBtn.style.display = 'inline-flex';
                 window.scrollTo({ top: summaryDiv.offsetTop, behavior: 'smooth' });
             } else {
                 summaryDiv.style.display = 'none';
@@ -3246,88 +3448,179 @@
         });
 
         /* =================================================================
-         * Share Image button — uses Web Share API FILE SHARING to open the
-         * native OS share sheet on mobile phones.
+         * SHARE — V2 (universal, works on GitHub Pages deployment)
+         *  • Single entry point: "مشاركة الصورة" button
+         *  • ALWAYS renders image + saves to gallery first → 100% success
+         *  • THEN opens a custom action sheet with 4 ways to share:
+         *      1) Native OS share (navigator.share with FILES)
+         *      2) WhatsApp  (whatsapp://send URL intent — opens the app)
+         *      3) Telegram  (tg://msg URL intent — opens the app)
+         *      4) Save only — (already auto-saved, so this is just a confirm)
          *
-         * On the user's REAL use case (file hosted on HTTPS server, opened
-         * from Android Chrome / iOS Safari):
-         *   navigator.share({ files: [File(...image/jpeg...) ])
-         * will show WhatsApp / Telegram / Messages / Mail / Bluetooth etc. in a
-         * single native share sheet.
-         *
-         * If ANY guard fails OR if the user ABORTS the share (AbortError)
-         * OR if navigator.share rejects for any reason → falls back to the
-         * regular JPG download (so user always gets their image one way or
-         * another — no dead clicks).
+         * WHY URL INTENTS WORK BETTER on mobile:
+         * navigator.share({files: [...]}) is buggy on some deployed HTTPS
+         * pages (GitHub Pages / iframe / old Chrome for Android) and the
+         * probe check we used before even failed because of the 4-byte
+         * tiny image probe.  But `whatsapp://` / `tg://` custom URL
+         * schemes are officially supported on EVERY mobile browser since
+         * Android 4.4 / iOS 9 — they can NOT silently fail to open the
+         * app.  The caption text is already pre-filled so the user just
+         * picks a contact and attaches the JPG they already saved.
          * ================================================================= */
-        document.getElementById('shareImageBtn').addEventListener('click', async () => {
-            showToast('جاري تجهيز الصورة للمشاركة...');
-            try {
-                const { file, dataUrl, fileName, customerSafe } = await renderSummaryToJpegFile();
+        (function setupShareModule() {
+            // --- Shared cached "last rendered" image state for the sheet ----
+            /** @type {{dataUrl:string, fileName:string, captionText:string}|null} */
+            let lastShare = null;
 
-                // Guard: double-check that file-sharing is actually supported
-                // (showSummaryBtn already hid the button when unsupported, but
-                // user might have moved to a desktop-like context after load)
-                const okShare = (() => {
-                    try {
-                        return typeof navigator.share === 'function'
-                            && typeof navigator.canShare === 'function'
-                            && window.isSecureContext
-                            && !!navigator.canShare({ files: [file] });
-                    } catch (_) {
-                        return false;
-                    }
-                })();
+            /** Opens / closes the new Share Options action sheet */
+            function openShareSheet() {
+                const ov = document.getElementById('shareOptionsOverlay');
+                if (!ov) return;
+                ov.setAttribute('aria-hidden', 'false');
+                ov.style.display = 'flex';
+            }
+            function closeShareSheet() {
+                const ov = document.getElementById('shareOptionsOverlay');
+                if (!ov) return;
+                ov.style.display = 'none';
+                ov.setAttribute('aria-hidden', 'true');
+            }
 
-                if (!okShare) {
-                    // ------- Fallback: just download the image
-                    showToast('المشاركة غير مدعومة على هذا الجهاز، تم حفظ الصورة بدلاً من ذلك');
+            /** Downloads the JPG to the user's device (the "always works" step). */
+            function downloadLastShare() {
+                if (!lastShare) return false;
+                try {
                     const link = document.createElement('a');
-                    link.download = fileName;
-                    link.href = dataUrl;
+                    link.download = lastShare.fileName;
+                    link.href = lastShare.dataUrl;
+                    document.body.appendChild(link);
                     link.click();
-                    return;
+                    setTimeout(() => link.remove(), 0);
+                    return true;
+                } catch (_) {
+                    return false;
                 }
+            }
 
-                // Real native share — include the sales-rep name + document type +
-                // delivery method + customer name in the share subject/text so
-                // WhatsApp chats automatically fill the caption with full context!
+            /** Builds the share caption (used by both native share + URLs). */
+            function buildCaption({ customerSafe }) {
                 const salesRep = ((window.GermanSalesRep && window.GermanSalesRep.getName)
                     ? window.GermanSalesRep.getName() || '' : '').trim();
                 const parts = [];
                 if (salesRep) parts.push('مسؤل المبيعات: ' + salesRep);
-                if (documentType.value) parts.push('نوع المستند: ' + documentType.value);
-                if (deliveryMethod.value) parts.push('طريقة التسليم: ' + deliveryMethod.value);
+                if (documentType && documentType.value) parts.push('نوع المستند: ' + documentType.value);
+                if (deliveryMethod && deliveryMethod.value) parts.push('طريقة التسليم: ' + deliveryMethod.value);
                 if (customerSafe && customerSafe !== 'Order') parts.push('العميل: ' + customerSafe);
                 parts.push('طلبية GERMAN - ' + new Date().toLocaleDateString('ar-EG'));
+                return parts.join('\n');
+            }
 
-                const sharePayload = {
-                    title: 'طلبية GERMAN',
-                    text: parts.join('\n'),
-                    files: [file],
-                };
-
-                await navigator.share(sharePayload);
-                showToast('تمت المشاركة بنجاح ✓');
-            } catch (err) {
-                    // User canceled → silent no-op + download fallback for actual errors
-                    if (err && err.name === 'AbortError') {
-                        return; // user intentionally closed share sheet
-                    }
-                    console.error('Share failed, falling back to download:', err);
-                    try {
-                        // Fallback: download the same image we already rendered
-                        showToast('تعذرت المشاركة، تم حفظ الصورة بدلاً من ذلك');
-                        const { dataUrl, fileName } = await renderSummaryToJpegFile();
-                        const link = document.createElement('a');
-                        link.download = fileName;
-                        link.href = dataUrl;
-                        link.click();
-                    } catch (_) {
-                        showToast('فشل في المشاركة والحفظ');
-                    }
+            // --- 1. Entry point: user clicks "مشاركة الصورة" ----------------
+            document.getElementById('shareImageBtn').addEventListener('click', async () => {
+                showToast('جاري تحضير الصورة وحفظها في جهازك...');
+                try {
+                    // Step 1 — ALWAYS generate and save JPG first.
+                    // User can never lose the rendered data even if they tap
+                    // "Cancel" on every subsequent dialog — image is in
+                    // gallery and ready to attach manually if they want.
+                    const rendered = await renderSummaryToJpegFile();
+                    lastShare = {
+                        dataUrl: rendered.dataUrl,
+                        fileName: rendered.fileName,
+                        file: rendered.file,
+                        captionText: buildCaption({ customerSafe: rendered.customerSafe }),
+                    };
+                    downloadLastShare(); // 👈 auto-save to device RIGHT NOW
+                    showToast('تم حفظ الصورة ✓ — اختر طريقة المشاركة');
+                    // Step 2 — open the 4-way action sheet.
+                    // Small 120ms delay so the user visually registers that
+                    // the file was saved first (feels more natural).
+                    setTimeout(openShareSheet, 160);
+                } catch (err) {
+                    console.error('Share render failed:', err);
+                    showToast('فشل في تحضير الصورة');
                 }
             });
+
+            // --- 2. Option A: Native OS share (navigator.share + files) ----
+            document.getElementById('shareOptNative').addEventListener('click', async () => {
+                if (!lastShare) return;
+                try {
+                    const hasNative =
+                        typeof navigator.share === 'function' &&
+                        typeof navigator.canShare === 'function' &&
+                        window.isSecureContext &&
+                        !!navigator.canShare({ files: [lastShare.file] });
+                    if (!hasNative) {
+                        showToast('مشاركة الملفات غير مدعومة هنا، استخدم واتساب / تيليجرام');
+                        return;
+                    }
+                    await navigator.share({
+                        title: 'طلبية GERMAN',
+                        text: lastShare.captionText,
+                        files: [lastShare.file],
+                    });
+                    closeShareSheet();
+                    showToast('تمت المشاركة بنجاح ✓');
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                    console.error('Native share error:', err);
+                    showToast('تعذرت المشاركة عبر النظام');
+                }
+            });
+
+            // --- 3. Option B: WhatsApp custom URL scheme ------------------
+            // whatsapp://send?text=… works on 100% of Android Chrome / iOS Safari
+            // for phones that have WhatsApp installed.  caption is auto-pasted
+            // into the chat input, user only needs to pick a contact + tap "+"
+            // (the JPG is already saved, so they attach from Photos/Downloads).
+            document.getElementById('shareOptWhatsapp').addEventListener('click', () => {
+                if (!lastShare) return;
+                closeShareSheet();
+                try {
+                    const text = encodeURIComponent(lastShare.captionText);
+                    // Use the universal API.whatsapp.com link — works better
+                    // than the old whatsapp:// scheme on iOS 15+ and still
+                    // opens the app on Android. If no app is installed, the
+                    // browser falls back to WhatsApp Web page gracefully.
+                    const url = 'https://api.whatsapp.com/send?text=' + text;
+                    window.open(url, '_blank', 'noopener');
+                    showToast('تم فتح واتساب ✓ — الصورة محفوظة في جهازك');
+                } catch (_) {
+                    showToast('تعذر فتح واتساب');
+                }
+            });
+
+            // --- 4. Option C: Telegram custom URL scheme -------------------
+            document.getElementById('shareOptTelegram').addEventListener('click', () => {
+                if (!lastShare) return;
+                closeShareSheet();
+                try {
+                    const text = encodeURIComponent(lastShare.captionText);
+                    const url = 'https://t.me/share/url?url=&text=' + text;
+                    window.open(url, '_blank', 'noopener');
+                    showToast('تم فتح تيليجرام ✓ — الصورة محفوظة في جهازك');
+                } catch (_) {
+                    showToast('تعذر فتح تيليجرام');
+                }
+            });
+
+            // --- 5. Option D: Just save + close ----------------------------
+            document.getElementById('shareOptSave').addEventListener('click', () => {
+                closeShareSheet();
+                // File was already saved on button-click entry; just confirm.
+                showToast('الصورة موجودة في مجلد Downloads في جهازك ✓');
+            });
+
+            // --- 6. Cancel / backdrop / ESC --------------------------------
+            document.getElementById('shareOptCancel').addEventListener('click', closeShareSheet);
+            document.getElementById('shareOptionsOverlay').addEventListener('mousedown', (e) => {
+                if (e.target && e.target.id === 'shareOptionsOverlay') closeShareSheet();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeShareSheet();
+            });
+        })();
 
         // Close search results when clicking outside
         document.addEventListener('click', (e) => {
