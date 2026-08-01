@@ -1813,14 +1813,16 @@
                 <div class="form-group">
                     <label for="documentType">نوع المستند</label>
                     <select id="documentType" autocomplete="off">
-                        <option value="فاتورة" selected>فاتورة</option>
-                        <option value="بيان">بيان</option>
+                        <option value="0" selected>إختر نوع المستند</option>
+                        <option value="1">فاتورة</option>
+                        <option value="2">بيان</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="deliveryMethod">طريقة التسليم</label>
                     <select id="deliveryMethod" autocomplete="off">
-                        <option value="شحن" selected>شحن</option>
+                        <option value="0" selected>إختر طريقة التسليم</option>
+                        <option value="شحن">شحن</option>
                         <option value="شركه">شركه</option>
                         <option value="مندوب">مندوب</option>
                     </select>
@@ -1945,11 +1947,16 @@
         </svg>
     </button>
 
-    <!-- Confirmation Modal (shared original - Remove All Order Items) -->
+    <!-- Confirmation Modal (shared original - Remove All Order Items + Customer Data) -->
     <div id="modalOverlay" class="modal-overlay">
         <div class="modal">
             <h3 class="cairo-font">تأكيد الحذف</h3>
-            <p style="margin-top: var(--spacing-md)">هل أنت متأكد من رغبتك في حذف جميع الأصناف؟</p>
+            <p style="margin-top: var(--spacing-md)">
+                هل أنت متأكد من رغبتك في حذف جميع بيانات الطلب؟
+            </p>
+            <p style="margin-top: var(--spacing-sm); opacity: 0.8; font-size: 14px;">
+                سوف يتم مسح: اسم العميل · نوع المستند · طريقة التسليم · جميع الأصناف في الطلب.
+            </p>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="cancelDeleteBtn">إلغاء</button>
                 <button class="btn btn-danger" id="confirmDeleteBtn">حذف الكل</button>
@@ -3295,10 +3302,45 @@
         });
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            // 1) Clear ALL order items
             orderItems = [];
             renderProducts();
+
+            // 2) Reset customer data form to DEFAULTS
+            if (customerName)   customerName.value   = '';
+            if (documentType)   documentType.value   = 'فاتورة';  // default value from HTML
+            if (deliveryMethod) deliveryMethod.value = 'شحن';     // default value from HTML
+
+            // 3) Erase the persisted (localStorage) values for document type /
+            //    delivery method so that a future page reload restores the
+            //    HTML defaults (فاتورة / شحن), not the old user selection.
+            try { localStorage.removeItem(LS_DOCUMENT_TYPE); }   catch (_) {}
+            try { localStorage.removeItem(LS_DELIVERY_METHOD); } catch (_) {}
+
+            // 4) If the SUMMARY section is currently visible, refresh its
+            //    text fields so they also reflect the cleared data.
+            try {
+                const elDoc  = document.getElementById('summaryDocumentType');
+                const elDel  = document.getElementById('summaryDeliveryMethod');
+                const elCust = document.getElementById('summaryCustomerName');
+                const elCnt  = document.getElementById('summaryTotalCount');
+                const elRep  = document.getElementById('summarySalesRepName');
+                if (elDoc)  elDoc.textContent  = 'فاتورة';
+                if (elDel)  elDel.textContent  = 'شحن';
+                if (elCust) elCust.textContent = '';
+                if (elCnt)  elCnt.textContent  = '0';
+                if (elRep) {
+                    try {
+                        const nm = (localStorage.getItem('german.sales_rep_name') || '').trim();
+                        elRep.textContent = nm || '';
+                    } catch (_) { /* sales-rep name is intentionally preserved */ }
+                }
+                const itemsBox = document.getElementById('summaryItems');
+                if (itemsBox) itemsBox.innerHTML = '';
+            } catch (_) {}
+
             modalOverlay.style.display = 'none';
-            showToast('تم حذف جميع الأصناف');
+            showToast('تم مسح بيانات الطلب كله (عميل + مستند + تسليم + أصناف)');
         });
 
         // Copy Functionality
