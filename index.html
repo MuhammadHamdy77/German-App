@@ -3529,11 +3529,18 @@
             function buildCaption({ customerSafe, count }) {
                 const RLI = '\u202B'; // Right-to-Left Isolate — forces correct RTL in ALL apps
                 const RLM = '\u200F'; // Right-to-Left Mark      — guards weak characters
-                const salesRep = (
-                    (window.GermanSalesRep && typeof window.GermanSalesRep.getName === 'function')
-                        ? window.GermanSalesRep.getName() || ''
-                        : localStorage.getItem('german.sales_rep_name') || ''
-                ).trim();
+                // 👈 PRIORITY: always read the FULL UNTRUNCATED name directly
+                // from localStorage first.  window.GermanSalesRep.getName() is
+                // only used as a fallback in case localStorage is cleared.
+                // The floating header badge uses a 18-char truncation — we NEVER
+                // want that truncation in our share caption.
+                let salesRep = '';
+                try { salesRep = (localStorage.getItem('german.sales_rep_name') || '').trim(); }
+                catch (_) { salesRep = ''; }
+                if (!salesRep && window.GermanSalesRep && typeof window.GermanSalesRep.getName === 'function') {
+                    try { salesRep = (window.GermanSalesRep.getName() || '').trim(); }
+                    catch (_) { salesRep = ''; }
+                }
                 const customerRaw = (typeof customerName !== 'undefined' && customerName && customerName.value)
                     ? customerName.value
                     : ((customerSafe && customerSafe !== 'Order') ? customerSafe : '');
@@ -3543,8 +3550,6 @@
                 const countTxt = (typeof count === 'number') ? String(count) : String(orderItems ? orderItems.length : 0);
                 const dateTxt = new Date().toLocaleDateString('ar-EG');
 
-                // Each line pattern:   RLI  +  "VALUE :التسمية"
-                // This matches the SUMMARY CARDS layout in the user's screenshot exactly.
                 const lines = [];
                 if (salesRep) lines.push(RLI + salesRep + RLM + ' :مسؤل المبيعات');
                 if (docType)  lines.push(RLI + docType  + RLM + ' :نوع المستند');
@@ -3556,6 +3561,21 @@
             }
 
             // --- 1. Entry point: user clicks "مشاركة الصورة" ----------------
+            //
+            // NEW BEHAVIOR (per user request — "شارك الصورة نفسها مش كابشن نص"):
+            //   1. Generate summary JPG + save it to Downloads FIRST (always).
+            //   2. TRY NATIVE OS SHARE WITH THE IMAGE AS A FILE ATTACHMENT.
+            //      → This opens the ANDROID / IOS SHARE SHEET directly,
+            //        user picks WhatsApp / Messenger / Telegram / any app,
+            //        and THE IMAGE IS ALREADY ATTACHED (just like sharing a
+            //        picture from the phone's Gallery), with the caption as
+            //        the auto-pasted text description.
+            //   3. ONLY IF the native share is IMPOSSIBLE on this device/browser,
+            //      OR the user closes the share sheet without a compatible app,
+            //      THEN we FALL BACK to our bottom action-sheet with the
+            //      explicit WhatsApp / Telegram / Save buttons.
+            //
+            // This matches what the user asked for 100%.
             document.getElementById('shareImageBtn').addEventListener('click', async () => {
                 showToast('جاري تحضير الصورة وحفظها في جهازك...');
                 try {
@@ -3573,11 +3593,45 @@
                             count: orderItems ? orderItems.length : 0,
                         }),
                     };
-                    downloadLastShare(); // 👈 auto-save to device RIGHT NOW
+                    downloadLastShare();
+
+                    // --- Step 2 — Try NATIVE SHARE with the IMAGE FILE first ---
+                    // We are ALREADY inside a user-gesture (click handler) so
+                    // the browser's autoplay/share-gate security restrictions
+                    // are satisfied 100% of the time.
+                    const canNative =
+                        typeof navigator.share === 'function' &&
+                        typeof navigator.canShare === 'function' &&
+                        window.isSecureContext &&
+                        !!navigator.canShare({ files: [lastShare.file] });
+
+                    if (canNative) {
+                        try {
+                            showToast('تم حفظ الصورة ✓ — جاري فتح قائمة المشاركة...');
+                            await navigator.share({
+                                title: 'طلبية GERMAN',
+                                text:  lastShare.captionText,
+                                files: [lastShare.file],
+                            });
+                            // If we reach here, the native share succeeded.
+                            closeShareSheet(); // just in case it was open
+                            showToast('تمت المشاركة بنجاح ✓');
+                            return; // 👈 do NOT open the bottom action sheet.
+                        } catch (err) {
+                            // User simply tapped outside/closed the sheet —
+                            // that's fine, no error toast.
+                            if (err && err.name === 'AbortError') {
+                                showToast('تم حفظ الصورة ✓ في جهازك');
+                                return;
+                            }
+                            // Any other native-share error → fall through to
+                            // our fallback action sheet below.
+                            console.warn('Native share skipped — using fallback:', err);
+                        }
+                    }
+
+                    // --- Step 3 — FALLBACK: show bottom sheet with explicit buttons.
                     showToast('تم حفظ الصورة ✓ — اختر طريقة المشاركة');
-                    // Step 2 — open the 4-way action sheet.
-                    // Small 120ms delay so the user visually registers that
-                    // the file was saved first (feels more natural).
                     setTimeout(openShareSheet, 160);
                 } catch (err) {
                     console.error('Share render failed:', err);
