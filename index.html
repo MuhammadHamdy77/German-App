@@ -1813,16 +1813,16 @@
                 <div class="form-group">
                     <label for="documentType">نوع المستند</label>
                     <select id="documentType" autocomplete="off">
-                        <option value="" selected>إختر نوع المستند</option>
-                        <option value="فاتورة">فاتورة</option>
+                        <option value="">إختر نوع المستند</option>
+                        <option value="فاتورة" selected>فاتورة</option>
                         <option value="بيان">بيان</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="deliveryMethod">طريقة التسليم</label>
                     <select id="deliveryMethod" autocomplete="off">
-                        <option value="" selected>إختر طريقة التسليم</option>
-                        <option value="شحن">شحن</option>
+                        <option value="">إختر طريقة التسليم</option>
+                        <option value="شحن" selected>شحن</option>
                         <option value="شركه">شركه</option>
                         <option value="مندوب">مندوب</option>
                     </select>
@@ -3365,6 +3365,9 @@
                 document.getElementById('hardness').value = item.hardness;
                 currentEditId = id;
                 addProductBtn.innerHTML = 'تحديث الصنف';
+                // — USER REQUEST: close the overlay whenever user clicks edit,
+                //   so they land back on the form without having to dismiss it.
+                closeOrderSummary();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         };
@@ -3387,8 +3390,8 @@
 
             // 2) Reset customer data form to DEFAULTS
             if (customerName)   customerName.value   = '';
-            if (documentType)   documentType.value   = '0';  // default value from HTML
-            if (deliveryMethod) deliveryMethod.value = '0';     // default value from HTML
+            if (documentType)   documentType.value   = 'فاتورة';  // HTML default selected
+            if (deliveryMethod) deliveryMethod.value = 'شحن';     // HTML default selected
 
             // 3) Erase the persisted (localStorage) values for document type /
             //    delivery method so that a future page reload restores the
@@ -3417,6 +3420,10 @@
                 const itemsBox = document.getElementById('summaryItems');
                 if (itemsBox) itemsBox.innerHTML = '';
             } catch (_) {}
+
+            // 5) USER REQUEST — close the summary overlay after a confirmed
+            //    "حذف الكل" so the user doesn't have to manually dismiss it.
+            closeOrderSummary();
 
             modalOverlay.style.display = 'none';
             showToast('تم مسح بيانات الطلب كله (عميل + مستند + تسليم + أصناف)');
@@ -3449,11 +3456,10 @@
             const saveImageBtn = document.getElementById('saveImageBtn');
             const shareImageBtn = document.getElementById('shareImageBtn');
             const isVisible = summaryDiv.style.display === 'block';
-            if (!name || !code) {
+            if (orderItems.length === 0) {
                 showToast('يرجى اختيار صنف أولاً');
                 return;
             }
-            
             if (!isVisible) {
                 // --- Basic fields (sales rep is rendered by its module on event)
                 document.getElementById('summaryCustomerName').textContent = customerName.value || 'غير محدد';
@@ -3497,6 +3503,25 @@
         document.getElementById('printBtn').addEventListener('click', () => {
             window.print();
         });
+
+        // =====================================================================
+        // HELPER: unified way to CLOSE the order summary overlay + action buttons.
+        // Extracts the exact block that showSummaryBtn uses so we can reuse it from
+        // edit/delete/share/save actions without duplicating code.
+        // =====================================================================
+        function closeOrderSummary() {
+            try {
+                const summaryDiv    = document.getElementById('orderSummary');
+                const printBtn   = document.getElementById('printBtn');
+                const saveBtn    = document.getElementById('saveImageBtn');
+                const shareBtn   = document.getElementById('shareImageBtn');
+                if (summaryDiv) summaryDiv.style.display = 'none';
+                if (printBtn)   printBtn.style.display   = 'none';
+                if (saveBtn)    saveBtn.style.display    = 'none';
+                if (shareBtn)   shareBtn.style.display   = 'none';
+            } catch (_) {}
+        }
+        window.closeOrderSummary = closeOrderSummary; // expose for IIFE share module below
 
         /* =================================================================
          * SHARED helper — renders the order summary to a JPEG File + optional
@@ -3547,6 +3572,9 @@
                     link.download = fileName;
                     link.href = dataUrl;
                     link.click();
+                    // — USER REQUEST: close order summary after a successful
+                    //   save-as-image, matching share/edit/delete behavior.
+                    closeOrderSummary();
                     showToast('تم حفظ الصورة بنجاح');
                 })
                 .catch((err) => {
@@ -3775,6 +3803,11 @@
                             });
                             // SUCCESS path: native share completed.
                             closeShareSheet();
+                            // — USER REQUEST: close order summary after a
+                            //   successful share action.
+                            if (typeof window.closeOrderSummary === 'function') {
+                                window.closeOrderSummary();
+                            }
                             showToast('تمت المشاركة بنجاح ✓');
                             return;
                         } catch (err) {
@@ -3819,6 +3852,10 @@
                         files: [lastShare.file],
                     });
                     closeShareSheet();
+                    // — USER REQUEST — close order summary on successful share.
+                    if (typeof window.closeOrderSummary === 'function') {
+                        window.closeOrderSummary();
+                    }
                     showToast('تمت المشاركة بنجاح ✓');
                 } catch (err) {
                     if (err && err.name === 'AbortError') return;
@@ -3830,6 +3867,11 @@
             // --- 3. Option B (in sheet): Just save + close ------------------
             document.getElementById('shareOptSave').addEventListener('click', () => {
                 closeShareSheet();
+                // — USER REQUEST — close order summary after a save-from-sheet
+                //   action too (user explicitly confirmed they're done with it).
+                if (typeof window.closeOrderSummary === 'function') {
+                    window.closeOrderSummary();
+                }
                 // File was already saved on button-click entry; just confirm.
                 showToast('الصورة موجودة في مجلد Downloads في جهازك ✓');
             });
